@@ -34,10 +34,10 @@ The current display size is 296 by 128 pixels, so each framebuffer must contain 
 
 ## Host Preview
 
-Render the compiled Lenna image as a PPM file:
+Render the compiled images as PPM files:
 
 ```sh
 vorbere run ui-preview
 ```
 
-The output is written to `build/ui-preview/lenna.ppm`.
+The output is written to `build/ui-preview/`.

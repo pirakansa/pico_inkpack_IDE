@@ -2,18 +2,18 @@
 
 #include <stdio.h>
 
-size_t epaper_preview_width_bytes(size_t width) {
-    return (width / 8u) + ((width % 8u) ? 1u : 0u);
+size_t epaper_preview_column_bytes(size_t height) {
+    return (height / 8u) + ((height % 8u) ? 1u : 0u);
 }
 
 size_t epaper_preview_image_size(size_t width, size_t height) {
-    return epaper_preview_width_bytes(width) * height;
+    return epaper_preview_column_bytes(height) * width;
 }
 
-static int epaper_preview_is_black_pixel(const unsigned char *image, size_t width, size_t x, size_t y) {
-    size_t width_bytes = epaper_preview_width_bytes(width);
-    unsigned char byte = image[(y * width_bytes) + (x / 8u)];
-    unsigned char mask = (unsigned char)(0x80u >> (x % 8u));
+static int epaper_preview_is_black_pixel(const unsigned char *image, size_t height, size_t x, size_t y) {
+    size_t column_bytes = epaper_preview_column_bytes(height);
+    unsigned char byte = image[(x * column_bytes) + (y / 8u)];
+    unsigned char mask = (unsigned char)(0x80u >> (y % 8u));
 
     return (byte & mask) == 0u;
 }
@@ -34,7 +34,7 @@ int epaper_preview_count_colors(
 
     for (size_t y = 0; y < height; ++y) {
         for (size_t x = 0; x < width; ++x) {
-            if (epaper_preview_is_black_pixel(image, width, x, y)) {
+            if (epaper_preview_is_black_pixel(image, height, x, y)) {
                 ++black_count;
             } else {
                 ++white_count;
@@ -68,7 +68,7 @@ int epaper_preview_write_ppm(const char *path, const unsigned char *image, size_
     for (size_t y = 0; y < height; ++y) {
         for (size_t x = 0; x < width; ++x) {
             unsigned char pixel[3];
-            unsigned char value = epaper_preview_is_black_pixel(image, width, x, y) ? 0x00u : 0xffu;
+            unsigned char value = epaper_preview_is_black_pixel(image, height, x, y) ? 0x00u : 0xffu;
 
             pixel[0] = value;
             pixel[1] = value;
