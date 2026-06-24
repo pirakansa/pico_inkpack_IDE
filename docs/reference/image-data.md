@@ -1,6 +1,6 @@
 # Image Data Reference
 
-The e-paper images are compiled into `src/epaper/ImageData.c`.
+The e-paper images are compiled into `src/epaper/ImageData.cpp`.
 Public declarations live in `src/epaper/ImageData.h`.
 
 ## Resource Location
@@ -25,7 +25,7 @@ The current manual formatting pipeline is:
 python3 tools/bmp2Monopic.py src/epaper/res/Lenna.bmp | sed s/\'//g | sed s/]/\\n}\\;/g | sed s/\\[/{\\n/g
 ```
 
-Paste the generated initializer body into `src/epaper/ImageData.c` when intentionally replacing an image.
+Paste the generated initializer body into `src/epaper/ImageData.cpp` when intentionally replacing an image.
 
 ## Data Contract
 

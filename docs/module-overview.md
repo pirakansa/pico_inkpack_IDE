@@ -5,7 +5,7 @@ This document describes the current repository layout. Code and passing validati
 ## Source Layout
 
 - `src/main.cpp`: Pico W startup, Pimoroni e-paper setup, button handling, Wi-Fi scan trigger, and image selection.
-- `src/epaper/ImageData.c`: compiled 1-bit framebuffers for the bundled images.
+- `src/epaper/ImageData.cpp`: compiled 1-bit framebuffers for the bundled images.
 - `src/epaper/ImageData.h`: public image declarations shared by firmware and host preview code.
 - `src/epaper/res/`: source bitmap and editor assets used to regenerate image data.
 - `src/epaper/preview/`: host-side PPM preview renderer for the compiled image data.
@@ -28,7 +28,7 @@ External dependencies stay at the repository root because they are managed by `m
 The repository validation entry points are:
 
 - `vorbere run check`: static repository text checks.
-- `vorbere run test`: C host tests and e-paper preview generation.
+- `vorbere run test`: C++ host tests and e-paper preview generation.
 - `vorbere run ui-preview`: render preview output under `build/ui-preview/`.
 - `vorbere run build`: Pico W firmware build.
 - `vorbere run build-pico2`: Pico 2 W firmware build.

@@ -22,7 +22,7 @@ tasks:
           Path("mani.yaml"),
           Path("vorbere.yaml"),
       ]
-      suffixes = {".c", ".h", ".md", ".py", ".yaml"}
+      suffixes = {".cpp", ".h", ".md", ".py", ".yaml"}
       excluded = set()
       failures = []
 
@@ -59,21 +59,21 @@ tasks:
       }
 
       mkdir -p build/tests/ui-preview
-      cc -std=c11 -Wall -Wextra -Werror -Isrc/epaper -Isrc/epaper/preview \
-        src/epaper/ImageData.c \
-        src/epaper/preview/epaper_preview.c \
-        src/epaper/preview/preview_main.c \
+      c++ -std=c++17 -Wall -Wextra -Werror -Isrc/epaper -Isrc/epaper/preview \
+        src/epaper/ImageData.cpp \
+        src/epaper/preview/epaper_preview.cpp \
+        src/epaper/preview/preview_main.cpp \
         -o build/tests/epaper_preview
       run_host_test "ui-preview" ./build/tests/epaper_preview build/tests/ui-preview
       test -f build/tests/ui-preview/lenna.ppm
-    desc: run C host tests
+    desc: run C++ host tests
   ui-preview:
     run: |
       mkdir -p build/ui-preview
-      cc -std=c11 -Wall -Wextra -Werror -Isrc/epaper -Isrc/epaper/preview \
-        src/epaper/ImageData.c \
-        src/epaper/preview/epaper_preview.c \
-        src/epaper/preview/preview_main.c \
+      c++ -std=c++17 -Wall -Wextra -Werror -Isrc/epaper -Isrc/epaper/preview \
+        src/epaper/ImageData.cpp \
+        src/epaper/preview/epaper_preview.cpp \
+        src/epaper/preview/preview_main.cpp \
         -o build/ui-preview/epaper_preview
       ./build/ui-preview/epaper_preview build/ui-preview
     desc: render e-Paper previews as PPM images
