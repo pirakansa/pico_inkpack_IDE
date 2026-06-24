@@ -1,0 +1,97 @@
+version: 1
+tasks:
+  setup:
+    run: |
+      curl -sfL https://raw.githubusercontent.com/alajmo/mani/main/install.sh | sh
+      mani sync -p
+    desc: prepare the workspace
+  check:
+    run: |
+      python3 - <<'PY'
+      from pathlib import Path
+      import sys
+
+      roots = [
+          Path("src"),
+          Path("docs"),
+          Path("tools"),
+          Path("tests"),
+          Path("README.md"),
+          Path("AGENTS.md"),
+          Path("CMakeLists.txt"),
+          Path("mani.yaml"),
+          Path("vorbere.yaml"),
+      ]
+      suffixes = {".c", ".h", ".md", ".py", ".yaml"}
+      excluded = set()
+      failures = []
+
+      def iter_paths():
+          for root in roots:
+              if root.is_dir():
+                  for path in sorted(root.rglob("*")):
+                      if path.is_file() and path.suffix in suffixes and path not in excluded:
+                          yield path
+              elif root.is_file() and root not in excluded:
+                  yield root
+
+      for path in iter_paths():
+          data = path.read_bytes()
+          text = data.decode("utf-8")
+          for lineno, line in enumerate(text.splitlines(), 1):
+              if line.endswith((" ", "\t")):
+                  failures.append(f"{path}:{lineno}: trailing whitespace")
+          if data and not data.endswith(b"\n"):
+              failures.append(f"{path}: missing trailing newline")
+
+      if failures:
+          print("\n".join(failures))
+          sys.exit(1)
+      PY
+    desc: run static checks
+  test:
+    run: |
+      run_host_test() {
+        label="$1"
+        shift
+        printf '\n[host-test] %s\n' "$label"
+        "$@"
+      }
+
+      mkdir -p build/tests/ui-preview
+      cc -std=c11 -Wall -Wextra -Werror -Isrc/epaper -Isrc/epaper/preview \
+        src/epaper/ImageData.c \
+        src/epaper/preview/epaper_preview.c \
+        src/epaper/preview/preview_main.c \
+        -o build/tests/epaper_preview
+      run_host_test "ui-preview" ./build/tests/epaper_preview build/tests/ui-preview
+      test -f build/tests/ui-preview/lenna.ppm
+    desc: run C host tests
+  ui-preview:
+    run: |
+      mkdir -p build/ui-preview
+      cc -std=c11 -Wall -Wextra -Werror -Isrc/epaper -Isrc/epaper/preview \
+        src/epaper/ImageData.c \
+        src/epaper/preview/epaper_preview.c \
+        src/epaper/preview/preview_main.c \
+        -o build/ui-preview/epaper_preview
+      ./build/ui-preview/epaper_preview build/ui-preview
+    desc: render e-Paper previews as PPM images
+  build:
+    run: |
+      mkdir -p build
+      cmake --fresh -DPICO_BOARD=pico_w -S . -B ./build
+      make -C ./build
+    desc: build artifacts
+  build-pico2:
+    run: |
+      mkdir -p build-pico2
+      cmake --fresh -DPICO_BOARD=pico2_w -S . -B ./build-pico2
+      make -C ./build-pico2
+    desc: build firmware for Raspberry Pi Pico 2
+  clean:
+    run: |
+      rm -rf ./build ./build-pico2
+    desc: clean the workspace
+  ci:
+    depends_on: [setup, check, test, build]
