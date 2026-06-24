@@ -1,8 +1,12 @@
 #include <uc8151.hpp>
 #include <pico_graphics.hpp>
 #include <button.hpp>
+#include <tusb.h>
 
 #include "ImageData.h"
+#include "app/display_state.h"
+#include "display/epaper_status_display.h"
+#include "usb_status/usb_status.h"
 
 
 using namespace pimoroni;
@@ -28,67 +32,59 @@ enum Pin {
     ENABLE_3V3  = 10
 };
 
-UC8151 uc8151(296, 128, ROTATE_0);
+UC8151 uc8151(EpaperStatusDisplay::WIDTH, EpaperStatusDisplay::HEIGHT, ROTATE_0);
 PicoGraphics_Pen1BitY graphics(uc8151.width, uc8151.height, nullptr);
+uint8_t status_framebuffer[EpaperStatusDisplay::FRAMEBUFFER_SIZE];
+EpaperStatusDisplay epaper_status_display(uc8151, graphics, status_framebuffer);
 
 Button button_a(Pin::A);
 Button button_c(Pin::C);
 Button button_d(Pin::D);
 Button button_e(Pin::E);
 
+const unsigned char *const mode_images[] = {
+    ironImage,
+    lennaImage,
+    iloveuImage,
+    iloveu2Image,
+    capImage
+};
+
+constexpr int MODE_IMAGE_COUNT = sizeof(mode_images) / sizeof(mode_images[0]);
 
 int main() {
 
+    tusb_init();
     stdio_init_all();
 
-    graphics.set_pen(0);
-    graphics.clear();
-
-    graphics.set_pen(15);
-    graphics.set_font("bitmap8");
-    graphics.text("Hello World", {0, 0}, 296);
-    graphics.text("A / C", {0, 16}, 296);
+    epaper_status_display.render_status("Waiting for hidraw input");
     sleep_ms(500);
 
-    uc8151.update(&graphics);
-
-    int before_mode = 0;
-    int after_mode = 0;
+    DisplayState display_state;
+    char status_message[USB_STATUS_TEXT_SIZE] = {};
 
     while(1){
+        tud_task();
+
+        if (usb_status_take_message(status_message, sizeof(status_message))) {
+            epaper_status_display.render_status(status_message[0] == '\0' ? "(empty)" : status_message);
+            display_state.show_status();
+        }
 
         if (button_a.read()) {
-            after_mode = ((after_mode - 1) < 0) ? 4 : (after_mode - 1);
+            display_state.select_previous_image(MODE_IMAGE_COUNT);
         }
         if (button_c.read()) {
-            after_mode = (4 < (after_mode + 1)) ? 0 : (after_mode + 1);
+            display_state.select_next_image(MODE_IMAGE_COUNT);
         }
 
-        if (before_mode == after_mode) continue;
-        before_mode = after_mode;
-
-        if (after_mode == 0){
-            graphics.set_framebuffer((void *)ironImage);
+        int image_mode = 0;
+        if (display_state.take_pending_image_mode(&image_mode)) {
+            epaper_status_display.render_image(mode_images[image_mode]);
+            sleep_ms(200);
         }
 
-        if (after_mode == 1){
-            graphics.set_framebuffer((void *)lennaImage);
-        }
-
-        if (after_mode == 2){
-            graphics.set_framebuffer((void *)iloveuImage);
-        }
-
-        if (after_mode == 3){
-            graphics.set_framebuffer((void *)iloveu2Image);
-        }
-
-        if (after_mode == 4){
-            graphics.set_framebuffer((void *)capImage);
-        }
-
-        uc8151.update(&graphics);
-        sleep_ms(200);
+        sleep_ms(10);
 
     }
 

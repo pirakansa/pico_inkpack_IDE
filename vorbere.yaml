@@ -66,6 +66,13 @@ tasks:
         -o build/tests/epaper_preview
       run_host_test "ui-preview" ./build/tests/epaper_preview build/tests/ui-preview
       test -f build/tests/ui-preview/lenna.ppm
+
+      c++ -std=c++17 -Wall -Wextra -Werror -Isrc \
+        src/app/display_state.cpp \
+        src/usb_status/usb_status.cpp \
+        tests/status_logic_test.cpp \
+        -o build/tests/status_logic_test
+      run_host_test "status-logic" ./build/tests/status_logic_test
     desc: run C++ host tests
   ui-preview:
     run: |

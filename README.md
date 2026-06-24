@@ -20,5 +20,5 @@ The default build target is `pico_w` and writes firmware artifacts under `build/
 - [Documentation index](docs/README.md)
 - [Module overview](docs/module-overview.md)
 - [Build and flash guide](docs/user-guides/build-and-flash.md)
+- [hidraw status display guide](docs/user-guides/hidraw-status.md)
 - [Image data reference](docs/reference/image-data.md)
-

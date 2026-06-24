@@ -30,6 +30,10 @@ add_subdirectory(src/epaper)
 
 add_executable(picopro
     src/main.cpp
+    src/app/display_state.cpp
+    src/display/epaper_status_display.cpp
+    src/usb_status/usb_descriptors.cpp
+    src/usb_status/usb_status.cpp
 )
 
 target_include_directories(picopro PRIVATE
@@ -44,6 +48,7 @@ target_link_libraries(
     picopro
     ImageData
     pico_stdlib
+    tinyusb_device
     hardware_spi
     hardware_pwm
     hardware_dma
