@@ -65,10 +65,11 @@ tasks:
         src/epaper/preview/preview_main.cpp \
         -o build/tests/epaper_preview
       run_host_test "ui-preview" ./build/tests/epaper_preview build/tests/ui-preview
-      test -f build/tests/ui-preview/lenna.ppm
+      test -f build/tests/ui-preview/address-screen.ppm
+      test -f build/tests/ui-preview/uptime-screen.ppm
 
       c++ -std=c++17 -Wall -Wextra -Werror -Isrc \
-        src/app/display_state.cpp \
+        src/app/screen_state.cpp \
         src/usb_status/usb_status.cpp \
         tests/status_logic_test.cpp \
         -o build/tests/status_logic_test
@@ -83,7 +84,7 @@ tasks:
         src/epaper/preview/preview_main.cpp \
         -o build/ui-preview/epaper_preview
       ./build/ui-preview/epaper_preview build/ui-preview
-    desc: render e-Paper previews as PPM images
+    desc: render e-paper screen previews as PPM images
   build:
     run: |
       mkdir -p build

@@ -19,6 +19,12 @@ public:
         uint8_t *status_framebuffer);
 
     void render_status(const char *message);
+    void render_network_status(
+        const char *slot1,
+        const char *slot2,
+        const char *slot3,
+        const char *slot4);
+    void render_uptime(const char *uptime);
     void render_image(const unsigned char *image);
 
 private:

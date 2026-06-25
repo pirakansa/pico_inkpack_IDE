@@ -29,15 +29,19 @@ Paste the generated initializer body into `src/epaper/ImageData.cpp` when intent
 
 ## Data Contract
 
-`src/main.cpp` passes the compiled arrays directly to `PicoGraphics_Pen1BitY::set_framebuffer`.
-The current display size is 296 by 128 pixels, so each framebuffer must contain 4,736 bytes.
+The current display size is 296 by 128 pixels, so each framebuffer contains 4,736 bytes.
+
+## Firmware Usage
+
+The firmware displays `lennaImage` during startup and keeps it visible until any physical A/B/C button is pressed.
 
 ## Host Preview
 
-Render the compiled images as PPM files:
+Render the compiled images and screen layout previews as PPM files:
 
 ```sh
 vorbere run ui-preview
 ```
 
-The output is written to `build/ui-preview/`.
+The address screen preview is written to `build/ui-preview/address-screen.ppm`.
+The USB uptime screen preview is written to `build/ui-preview/uptime-screen.ppm`.
