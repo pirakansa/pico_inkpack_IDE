@@ -20,10 +20,10 @@ public:
 
     void render_status(const char *message);
     void render_network_status(
-        const char *lan1_ipv4,
-        const char *lan1_ipv6,
-        const char *lan2_ipv4,
-        const char *lan2_ipv6);
+        const char *slot1,
+        const char *slot2,
+        const char *slot3,
+        const char *slot4);
     void render_uptime(const char *uptime);
     void render_image(const unsigned char *image);
 

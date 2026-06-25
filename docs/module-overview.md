@@ -26,7 +26,7 @@ External dependencies stay at the repository root because they are managed by `m
 2. Initialize the UC8151 e-paper display and 1-bit graphics buffer.
 3. Render the Lenna image as the startup screen.
 4. Poll TinyUSB and the physical A/B/C buttons in the main loop.
-5. When a HID OUT command report arrives for a LAN1/LAN2 IPv4/IPv6 slot, normalize and store its payload.
+5. When a HID OUT command report arrives for one of the four address slots, normalize and store its payload.
 6. While the Lenna startup screen is visible, transition to the four-slot address screen when any A/B/C button is pressed.
 7. From the address screen, use A or C to ring between the address screen and the USB uptime screen.
 8. After the address screen is visible, render subsequent address updates immediately when that screen is active.

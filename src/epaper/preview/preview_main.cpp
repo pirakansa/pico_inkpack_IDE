@@ -9,23 +9,60 @@ typedef struct {
     const unsigned char *image;
 } preview_image_t;
 
+static const size_t STATUS_SCREEN_MARGIN_X = 8;
+static const size_t STATUS_SCREEN_TITLE_Y = 8;
+static const size_t ADDRESS_SCREEN_FIRST_LINE_Y = 32;
+static const size_t ADDRESS_SCREEN_LINE_SPACING = 22;
+static const size_t ADDRESS_SCREEN_TEXT_SCALE = 1;
+
+static void draw_address_line(unsigned char *image, size_t slot, const char *text, size_t y) {
+    char line[64];
+
+    snprintf(line, sizeof(line), "%zu:%s", slot, text);
+    epaper_preview_draw_text(
+        image,
+        EPAPER_PREVIEW_WIDTH,
+        EPAPER_PREVIEW_HEIGHT,
+        STATUS_SCREEN_MARGIN_X,
+        y,
+        ADDRESS_SCREEN_TEXT_SCALE,
+        line);
+}
+
 static void draw_address_preview(unsigned char *image) {
     epaper_preview_clear(image, EPAPER_PREVIEW_WIDTH, EPAPER_PREVIEW_HEIGHT);
-    epaper_preview_draw_text(image, EPAPER_PREVIEW_WIDTH, EPAPER_PREVIEW_HEIGHT, 0, 0, 2, "IP addresses");
-    epaper_preview_draw_text(image, EPAPER_PREVIEW_WIDTH, EPAPER_PREVIEW_HEIGHT, 0, 22, 1, "LAN1 IPv4");
-    epaper_preview_draw_text(image, EPAPER_PREVIEW_WIDTH, EPAPER_PREVIEW_HEIGHT, 0, 32, 1, "192.0.2.101");
-    epaper_preview_draw_text(image, EPAPER_PREVIEW_WIDTH, EPAPER_PREVIEW_HEIGHT, 0, 48, 1, "LAN1 IPv6");
-    epaper_preview_draw_text(image, EPAPER_PREVIEW_WIDTH, EPAPER_PREVIEW_HEIGHT, 0, 58, 1, "2001:db8::101");
-    epaper_preview_draw_text(image, EPAPER_PREVIEW_WIDTH, EPAPER_PREVIEW_HEIGHT, 0, 74, 1, "LAN2 IPv4");
-    epaper_preview_draw_text(image, EPAPER_PREVIEW_WIDTH, EPAPER_PREVIEW_HEIGHT, 0, 84, 1, "192.0.2.202");
-    epaper_preview_draw_text(image, EPAPER_PREVIEW_WIDTH, EPAPER_PREVIEW_HEIGHT, 0, 100, 1, "LAN2 IPv6");
-    epaper_preview_draw_text(image, EPAPER_PREVIEW_WIDTH, EPAPER_PREVIEW_HEIGHT, 0, 110, 1, "2001:db8::202");
+    epaper_preview_draw_text(
+        image,
+        EPAPER_PREVIEW_WIDTH,
+        EPAPER_PREVIEW_HEIGHT,
+        STATUS_SCREEN_MARGIN_X,
+        STATUS_SCREEN_TITLE_Y,
+        2,
+        "IP addresses");
+    draw_address_line(image, 1, "192.0.2.101", ADDRESS_SCREEN_FIRST_LINE_Y);
+    draw_address_line(image, 2, "2001:db8::101", ADDRESS_SCREEN_FIRST_LINE_Y + ADDRESS_SCREEN_LINE_SPACING);
+    draw_address_line(image, 3, "192.0.2.202", ADDRESS_SCREEN_FIRST_LINE_Y + (ADDRESS_SCREEN_LINE_SPACING * 2));
+    draw_address_line(image, 4, "2001:db8::202", ADDRESS_SCREEN_FIRST_LINE_Y + (ADDRESS_SCREEN_LINE_SPACING * 3));
 }
 
 static void draw_uptime_preview(unsigned char *image) {
     epaper_preview_clear(image, EPAPER_PREVIEW_WIDTH, EPAPER_PREVIEW_HEIGHT);
-    epaper_preview_draw_text(image, EPAPER_PREVIEW_WIDTH, EPAPER_PREVIEW_HEIGHT, 0, 0, 2, "USB uptime");
-    epaper_preview_draw_text(image, EPAPER_PREVIEW_WIDTH, EPAPER_PREVIEW_HEIGHT, 0, 42, 2, "0 d 01:23:45");
+    epaper_preview_draw_text(
+        image,
+        EPAPER_PREVIEW_WIDTH,
+        EPAPER_PREVIEW_HEIGHT,
+        STATUS_SCREEN_MARGIN_X,
+        STATUS_SCREEN_TITLE_Y,
+        2,
+        "USB uptime");
+    epaper_preview_draw_text(
+        image,
+        EPAPER_PREVIEW_WIDTH,
+        EPAPER_PREVIEW_HEIGHT,
+        STATUS_SCREEN_MARGIN_X,
+        54,
+        2,
+        "0 d 01:23:45");
 }
 
 static int write_preview(const char *output_dir, const preview_image_t *preview) {
