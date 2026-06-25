@@ -23,16 +23,10 @@ Run static checks:
 vorbere run check
 ```
 
-Run host tests and preview generation:
+Run host tests:
 
 ```sh
 vorbere run test
-```
-
-Render only the e-paper preview:
-
-```sh
-vorbere run ui-preview
 ```
 
 ## Build

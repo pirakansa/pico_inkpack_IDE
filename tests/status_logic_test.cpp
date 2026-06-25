@@ -1,4 +1,3 @@
-#include "app/display_state.h"
 #include "usb_status/usb_status.h"
 
 #include <assert.h>
@@ -38,43 +37,9 @@ static void test_skips_control_bytes() {
     assert(strcmp(message, "A\tBC") == 0);
 }
 
-static void test_display_state_cycles_images() {
-    DisplayState state;
-    int mode = -2;
-
-    assert(!state.take_pending_image_mode(&mode));
-
-    state.select_next_image(5);
-    assert(state.take_pending_image_mode(&mode));
-    assert(mode == 0);
-    assert(!state.take_pending_image_mode(&mode));
-
-    state.select_previous_image(5);
-    assert(state.take_pending_image_mode(&mode));
-    assert(mode == 4);
-
-    state.select_next_image(5);
-    assert(state.take_pending_image_mode(&mode));
-    assert(mode == 0);
-}
-
-static void test_display_state_status_resets_image_selection() {
-    DisplayState state;
-    int mode = -2;
-
-    state.select_next_image(5);
-    assert(state.take_pending_image_mode(&mode));
-
-    state.show_status();
-    assert(state.image_mode() == DisplayState::NO_IMAGE_MODE);
-    assert(!state.take_pending_image_mode(&mode));
-}
-
 int main() {
     test_formats_hid_report_text();
     test_limits_hid_report_to_report_size();
     test_skips_control_bytes();
-    test_display_state_cycles_images();
-    test_display_state_status_resets_image_selection();
     return 0;
 }

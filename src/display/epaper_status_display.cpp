@@ -20,8 +20,3 @@ void EpaperStatusDisplay::render_status(const char *message) {
     graphics.text(message, {0, 28}, WIDTH, 2);
     display.update(&graphics);
 }
-
-void EpaperStatusDisplay::render_image(const unsigned char *image) {
-    graphics.set_framebuffer((void *)image);
-    display.update(&graphics);
-}

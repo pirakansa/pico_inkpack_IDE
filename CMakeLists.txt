@@ -22,15 +22,12 @@ set(CMAKE_CXX_STANDARD 17)
 pico_sdk_init()
 
 include("${PIMORONI_PICO_PATH}/common/pimoroni_bus.cmake")
-include("${PIMORONI_PICO_PATH}/drivers/button/button.cmake")
 include("${PIMORONI_PICO_PATH}/drivers/rgbled/rgbled.cmake")
 include("${PIMORONI_PICO_PATH}/drivers/uc8151/uc8151.cmake")
 include("${PIMORONI_PICO_PATH}/libraries/pico_graphics/pico_graphics.cmake")
-add_subdirectory(src/epaper)
 
 add_executable(picopro
     src/main.cpp
-    src/app/display_state.cpp
     src/display/epaper_status_display.cpp
     src/usb_status/usb_descriptors.cpp
     src/usb_status/usb_status.cpp
@@ -46,14 +43,12 @@ pico_add_extra_outputs(picopro)
 
 target_link_libraries(
     picopro
-    ImageData
     pico_stdlib
     tinyusb_device
     hardware_spi
     hardware_pwm
     hardware_dma
     rgbled
-    button
     uc8151
     pico_graphics
 )
