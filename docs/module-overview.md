@@ -25,7 +25,7 @@ External dependencies stay at the repository root because they are managed by `m
 2. Initialize the UC8151 e-paper display and 1-bit graphics buffer.
 3. Render the Lenna image as the startup screen.
 4. Poll TinyUSB in the main loop.
-5. When a 64-byte HID OUT report arrives, normalize printable status text and render it on the e-paper display.
+5. When a HID OUT command report arrives for display text, normalize its payload and render it on the e-paper display.
 
 ## Validation
 

@@ -5,7 +5,16 @@ The firmware exposes a composite USB device:
 - USB CDC for stdio.
 - Vendor-defined HID IN/OUT for host status updates.
 
-The HID interface uses a 64-byte report. The Pico treats each OUT report as printable ASCII status text, trims trailing NUL bytes, ignores carriage returns, and displays the result on the e-paper screen.
+The HID interface uses a 64-byte OUT report for small state updates and control commands. Each report starts with a 3-byte header followed by a payload:
+
+| Byte | Field | Current value |
+| --- | --- | --- |
+| 0 | command | `0x01` update |
+| 1 | target | `0x01` display text |
+| 2 | length | payload byte length, `0..61` |
+| 3..63 | payload | target-specific data |
+
+For display text updates, the Pico treats the payload as printable ASCII status text, trims trailing NUL bytes, ignores carriage returns, and displays the result on the e-paper screen. Unknown commands, unknown targets, truncated payloads, and payload lengths above 61 bytes are ignored.
 
 ## Device Match
 
@@ -24,7 +33,7 @@ udevadm info -a -n /dev/hidrawX
 
 ## Manual Write
 
-Write exactly one 64-byte report to the matching hidraw device:
+Write one command report to the matching hidraw device:
 
 ```sh
 python3 - <<'PY' /dev/hidrawX "IP: 192.0.2.10"
@@ -32,8 +41,9 @@ from pathlib import Path
 import sys
 
 path = Path(sys.argv[1])
-message = sys.argv[2].encode("ascii", errors="replace")[:64]
-path.write_bytes(message.ljust(64, b"\0"))
+payload = sys.argv[2].encode("ascii", errors="replace")[:61]
+report = bytes([0x01, 0x01, len(payload)]) + payload
+path.write_bytes(report.ljust(64, b"\0"))
 PY
 ```
 
@@ -62,8 +72,9 @@ from pathlib import Path
 import sys
 
 path = Path(sys.argv[1])
-message = sys.argv[2].encode("ascii", errors="replace")[:64]
-path.write_bytes(message.ljust(64, b"\0"))
+payload = sys.argv[2].encode("ascii", errors="replace")[:61]
+report = bytes([0x01, 0x01, len(payload)]) + payload
+path.write_bytes(report.ljust(64, b"\0"))
 PY
 ```
 

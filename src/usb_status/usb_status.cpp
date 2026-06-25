@@ -23,8 +23,8 @@ size_t usb_status_format_message(char *buffer, size_t buffer_size, const uint8_t
     }
 
     size_t message_length = length;
-    if (message_length > USB_STATUS_REPORT_SIZE) {
-        message_length = USB_STATUS_REPORT_SIZE;
+    if (message_length > USB_STATUS_REPORT_PAYLOAD_SIZE) {
+        message_length = USB_STATUS_REPORT_PAYLOAD_SIZE;
     }
 
     while (message_length > 0 && data[message_length - 1] == '\0') {
@@ -45,7 +45,28 @@ size_t usb_status_format_message(char *buffer, size_t buffer_size, const uint8_t
     return write_index;
 }
 
-void usb_status_receive_report(const uint8_t *data, uint16_t length) {
-    usb_status_format_message(pending_message, sizeof(pending_message), data, length);
+bool usb_status_receive_report(const uint8_t *data, uint16_t length) {
+    if (length < USB_STATUS_REPORT_HEADER_SIZE) {
+        return false;
+    }
+
+    uint8_t command = data[0];
+    uint8_t target = data[1];
+    uint8_t payload_length = data[2];
+    if (payload_length > USB_STATUS_REPORT_PAYLOAD_SIZE ||
+        payload_length > length - USB_STATUS_REPORT_HEADER_SIZE) {
+        return false;
+    }
+
+    if (command != USB_STATUS_COMMAND_UPDATE || target != USB_STATUS_TARGET_DISPLAY_TEXT) {
+        return false;
+    }
+
+    usb_status_format_message(
+        pending_message,
+        sizeof(pending_message),
+        data + USB_STATUS_REPORT_HEADER_SIZE,
+        payload_length);
     pending_message_available = true;
+    return true;
 }

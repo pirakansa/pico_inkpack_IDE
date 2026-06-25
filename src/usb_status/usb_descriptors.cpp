@@ -164,6 +164,6 @@ extern "C" void tud_hid_set_report_cb(
     (void)instance;
     (void)report_id;
     if (report_type == HID_REPORT_TYPE_OUTPUT) {
-        usb_status_receive_report(buffer, buffer_size);
+        (void)usb_status_receive_report(buffer, buffer_size);
     }
 }
