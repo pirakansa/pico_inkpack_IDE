@@ -44,6 +44,18 @@ void EpaperStatusDisplay::render_network_status(
     display.update(&graphics);
 }
 
+void EpaperStatusDisplay::render_uptime(const char *uptime) {
+    graphics.set_framebuffer(status_framebuffer);
+    graphics.set_pen(0);
+    graphics.clear();
+
+    graphics.set_pen(15);
+    graphics.set_font("bitmap8");
+    graphics.text("USB uptime", {0, 0}, WIDTH, 2);
+    graphics.text(uptime, {0, 42}, WIDTH, 2);
+    display.update(&graphics);
+}
+
 void EpaperStatusDisplay::render_image(const unsigned char *image) {
     graphics.set_framebuffer((void *)image);
     display.update(&graphics);

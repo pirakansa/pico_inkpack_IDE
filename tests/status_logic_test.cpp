@@ -147,18 +147,35 @@ static void test_screen_transitions_from_startup_on_button_press() {
     ScreenState state;
 
     assert(state.is_showing_startup_image());
-    assert(!state.handle_button_mask(0));
+    assert(!state.handle_button_press(0));
     assert(state.is_showing_startup_image());
-    assert(state.handle_button_mask(USB_STATUS_BUTTON_B_MASK));
+    assert(state.handle_button_press(USB_STATUS_BUTTON_B_MASK));
     assert(!state.is_showing_startup_image());
+    assert(state.is_showing_network_status());
 }
 
-static void test_screen_ignores_buttons_after_status_transition() {
+static void test_screen_rings_between_network_and_uptime_with_a_and_c() {
     ScreenState state;
 
-    assert(state.handle_button_mask(USB_STATUS_BUTTON_A_MASK));
-    assert(!state.handle_button_mask(USB_STATUS_BUTTON_C_MASK));
-    assert(!state.is_showing_startup_image());
+    assert(state.handle_button_press(USB_STATUS_BUTTON_A_MASK));
+    assert(state.is_showing_network_status());
+    assert(state.handle_button_press(USB_STATUS_BUTTON_C_MASK));
+    assert(state.is_showing_uptime());
+    assert(state.handle_button_press(USB_STATUS_BUTTON_C_MASK));
+    assert(state.is_showing_network_status());
+    assert(state.handle_button_press(USB_STATUS_BUTTON_A_MASK));
+    assert(state.is_showing_uptime());
+    assert(state.handle_button_press(USB_STATUS_BUTTON_A_MASK));
+    assert(state.is_showing_network_status());
+}
+
+static void test_screen_ignores_b_between_network_and_uptime() {
+    ScreenState state;
+
+    assert(state.handle_button_press(USB_STATUS_BUTTON_A_MASK));
+    assert(state.is_showing_network_status());
+    assert(!state.handle_button_press(USB_STATUS_BUTTON_B_MASK));
+    assert(state.is_showing_network_status());
 }
 
 int main() {
@@ -172,6 +189,7 @@ int main() {
     test_builds_button_state_report();
     test_rejects_small_button_report_buffer();
     test_screen_transitions_from_startup_on_button_press();
-    test_screen_ignores_buttons_after_status_transition();
+    test_screen_rings_between_network_and_uptime_with_a_and_c();
+    test_screen_ignores_b_between_network_and_uptime();
     return 0;
 }

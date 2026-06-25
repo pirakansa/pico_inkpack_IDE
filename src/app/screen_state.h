@@ -5,11 +5,20 @@
 
 class ScreenState {
 public:
+    enum class Screen {
+        STARTUP,
+        NETWORK,
+        UPTIME
+    };
+
     bool is_showing_startup_image() const;
-    bool handle_button_mask(uint8_t button_mask);
+    bool is_showing_network_status() const;
+    bool is_showing_uptime() const;
+    Screen current_screen() const;
+    bool handle_button_press(uint8_t pressed_button_mask);
 
 private:
-    bool showing_startup_image = true;
+    Screen screen = Screen::STARTUP;
 };
 
 #endif

@@ -24,7 +24,7 @@ Address slot targets:
 | `0x12` | LAN2 IPv4 |
 | `0x13` | LAN2 IPv6 |
 
-For address updates, the Pico treats the payload as printable ASCII, trims trailing NUL bytes, ignores carriage returns, and stores it in the selected slot. The startup Lenna image stays visible until any physical A/B/C button is pressed; that button press transitions to the four-slot status/IP screen. After that transition, later address updates render immediately. Unknown commands, unknown targets, truncated payloads, and payload lengths above 61 bytes are ignored.
+For address updates, the Pico treats the payload as printable ASCII, trims trailing NUL bytes, ignores carriage returns, and stores it in the selected slot. The startup Lenna image stays visible until any physical A/B/C button is pressed; that button press transitions to the four-slot address screen. From the address screen, A and C ring between the address screen and a USB uptime screen. The uptime value is measured from just after `tusb_init()` completes and refreshes approximately once per minute while visible. Later address updates render immediately when the address screen is active. Unknown commands, unknown targets, truncated payloads, and payload lengths above 61 bytes are ignored.
 
 The Pico also sends a HID IN report when the physical A/B/C button state changes:
 
