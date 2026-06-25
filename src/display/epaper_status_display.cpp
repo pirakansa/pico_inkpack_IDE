@@ -11,10 +11,10 @@ EpaperStatusDisplay::EpaperStatusDisplay(
 
 void EpaperStatusDisplay::render_status(const char *message) {
     graphics.set_framebuffer(status_framebuffer);
-    graphics.set_pen(0);
+    graphics.set_pen(15);
     graphics.clear();
 
-    graphics.set_pen(15);
+    graphics.set_pen(0);
     graphics.set_font("bitmap8");
     graphics.text("USB status", {0, 0}, WIDTH, 2);
     graphics.text(message, {0, 28}, WIDTH, 2);
@@ -27,10 +27,10 @@ void EpaperStatusDisplay::render_network_status(
     const char *lan2_ipv4,
     const char *lan2_ipv6) {
     graphics.set_framebuffer(status_framebuffer);
-    graphics.set_pen(0);
+    graphics.set_pen(15);
     graphics.clear();
 
-    graphics.set_pen(15);
+    graphics.set_pen(0);
     graphics.set_font("bitmap8");
     graphics.text("IP addresses", {0, 0}, WIDTH, 2);
     graphics.text("LAN1 IPv4", {0, 22}, WIDTH, 1);
@@ -46,10 +46,10 @@ void EpaperStatusDisplay::render_network_status(
 
 void EpaperStatusDisplay::render_uptime(const char *uptime) {
     graphics.set_framebuffer(status_framebuffer);
-    graphics.set_pen(0);
+    graphics.set_pen(15);
     graphics.clear();
 
-    graphics.set_pen(15);
+    graphics.set_pen(0);
     graphics.set_font("bitmap8");
     graphics.text("USB uptime", {0, 0}, WIDTH, 2);
     graphics.text(uptime, {0, 42}, WIDTH, 2);
