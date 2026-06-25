@@ -29,6 +29,12 @@ Run host tests:
 vorbere run test
 ```
 
+Render e-paper screen previews:
+
+```sh
+vorbere run ui-preview
+```
+
 ## Build
 
 Build for Raspberry Pi Pico W:

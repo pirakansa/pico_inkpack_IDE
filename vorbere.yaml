@@ -58,6 +58,16 @@ tasks:
         "$@"
       }
 
+      mkdir -p build/tests/ui-preview
+      c++ -std=c++17 -Wall -Wextra -Werror -Isrc/epaper -Isrc/epaper/preview \
+        src/epaper/ImageData.cpp \
+        src/epaper/preview/epaper_preview.cpp \
+        src/epaper/preview/preview_main.cpp \
+        -o build/tests/epaper_preview
+      run_host_test "ui-preview" ./build/tests/epaper_preview build/tests/ui-preview
+      test -f build/tests/ui-preview/address-screen.ppm
+      test -f build/tests/ui-preview/uptime-screen.ppm
+
       c++ -std=c++17 -Wall -Wextra -Werror -Isrc \
         src/app/screen_state.cpp \
         src/usb_status/usb_status.cpp \
@@ -65,6 +75,16 @@ tasks:
         -o build/tests/status_logic_test
       run_host_test "status-logic" ./build/tests/status_logic_test
     desc: run C++ host tests
+  ui-preview:
+    run: |
+      mkdir -p build/ui-preview
+      c++ -std=c++17 -Wall -Wextra -Werror -Isrc/epaper -Isrc/epaper/preview \
+        src/epaper/ImageData.cpp \
+        src/epaper/preview/epaper_preview.cpp \
+        src/epaper/preview/preview_main.cpp \
+        -o build/ui-preview/epaper_preview
+      ./build/ui-preview/epaper_preview build/ui-preview
+    desc: render e-paper screen previews as PPM images
   build:
     run: |
       mkdir -p build

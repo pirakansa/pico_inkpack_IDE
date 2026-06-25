@@ -8,6 +8,16 @@
 
 size_t epaper_preview_column_bytes(size_t height);
 size_t epaper_preview_image_size(size_t width, size_t height);
+void epaper_preview_clear(unsigned char *image, size_t width, size_t height);
+void epaper_preview_draw_text(
+    unsigned char *image,
+    size_t width,
+    size_t height,
+    size_t x,
+    size_t y,
+    size_t scale,
+    const char *text
+);
 int epaper_preview_write_ppm(const char *path, const unsigned char *image, size_t width, size_t height);
 int epaper_preview_count_colors(
     const unsigned char *image,

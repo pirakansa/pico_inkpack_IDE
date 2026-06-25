@@ -10,7 +10,7 @@ This document describes the current repository layout. Code and passing validati
 - `src/epaper/ImageData.cpp`: compiled 1-bit framebuffers for the bundled images.
 - `src/epaper/ImageData.h`: public image declarations for the compiled framebuffers.
 - `src/epaper/res/`: source bitmap and editor assets used to regenerate image data.
-- `src/epaper/preview/`: host-side PPM preview renderer for the compiled image data.
+- `src/epaper/preview/`: host-side PPM preview renderer for the compiled image data and screen layouts.
 - `src/tusb_config.h`: TinyUSB device class configuration for CDC plus vendor HID.
 - `src/usb_status/`: USB descriptors, HID OUT report handling, and host-provided status text normalization.
 - `tools/`: maintenance scripts, including bitmap conversion.
@@ -38,5 +38,6 @@ The repository validation entry points are:
 
 - `vorbere run check`: static repository text checks.
 - `vorbere run test`: C++ host tests.
+- `vorbere run ui-preview`: render preview output under `build/ui-preview/`.
 - `vorbere run build`: Pico W firmware build.
 - `vorbere run build-pico2`: Pico 2 W firmware build.
