@@ -5,7 +5,7 @@ This document describes the current repository layout. Code and passing validati
 ## Source Layout
 
 - `src/main.cpp`: Pico W startup, TinyUSB polling, and high-level orchestration.
-- `src/display/`: Pimoroni e-paper rendering for status text.
+- `src/display/`: Pimoroni e-paper rendering for startup images and status text.
 - `src/epaper/ImageData.cpp`: compiled 1-bit framebuffers for the bundled images.
 - `src/epaper/ImageData.h`: public image declarations for the compiled framebuffers.
 - `src/epaper/res/`: source bitmap and editor assets used to regenerate image data.
@@ -23,7 +23,7 @@ External dependencies stay at the repository root because they are managed by `m
 
 1. Initialize TinyUSB and stdio.
 2. Initialize the UC8151 e-paper display and 1-bit graphics buffer.
-3. Render a startup status screen.
+3. Render the Lenna image as the startup screen.
 4. Poll TinyUSB in the main loop.
 5. When a 64-byte HID OUT report arrives, normalize printable status text and render it on the e-paper display.
 

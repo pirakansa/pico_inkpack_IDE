@@ -2,6 +2,7 @@
 #include <pico_graphics.hpp>
 #include <tusb.h>
 
+#include "ImageData.h"
 #include "display/epaper_status_display.h"
 #include "usb_status/usb_status.h"
 
@@ -32,8 +33,7 @@ int main() {
     tusb_init();
     stdio_init_all();
 
-    epaper_status_display.render_status("Waiting for hidraw input");
-    sleep_ms(500);
+    epaper_status_display.render_image(lennaImage);
 
     char status_message[USB_STATUS_TEXT_SIZE] = {};
 

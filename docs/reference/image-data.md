@@ -29,8 +29,8 @@ Paste the generated initializer body into `src/epaper/ImageData.cpp` when intent
 
 ## Data Contract
 
-The current display size is 296 by 128 pixels, so each retained framebuffer contains 4,736 bytes.
+The current display size is 296 by 128 pixels, so each framebuffer contains 4,736 bytes.
 
-## Host Preview
+## Firmware Usage
 
-The compiled image resources are currently retained for reference, but the firmware no longer displays them.
+The firmware displays `lennaImage` during startup before any host-provided HID status text arrives.

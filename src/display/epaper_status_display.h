@@ -19,6 +19,7 @@ public:
         uint8_t *status_framebuffer);
 
     void render_status(const char *message);
+    void render_image(const unsigned char *image);
 
 private:
     pimoroni::UC8151 &display;
