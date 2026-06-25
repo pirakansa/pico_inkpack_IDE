@@ -46,10 +46,47 @@ static void test_receives_display_text_command_report() {
         'I', 'P', ':', ' ', '1', '9', '2', '\r', '\n', 'O', 'K'
     };
     char message[USB_STATUS_TEXT_SIZE] = {};
+    char addresses[USB_STATUS_IP_SLOT_COUNT][USB_STATUS_TEXT_SIZE] = {};
 
     assert(usb_status_receive_report(report, sizeof(report)));
     assert(usb_status_take_message(message, sizeof(message)));
     assert(strcmp(message, "IP: 192\nOK") == 0);
+    assert(usb_status_take_network_status(addresses));
+    assert(strcmp(addresses[0], "IP: 192\nOK") == 0);
+    assert(strcmp(addresses[1], "-") == 0);
+    assert(strcmp(addresses[2], "-") == 0);
+    assert(strcmp(addresses[3], "-") == 0);
+}
+
+static void test_receives_network_address_slots() {
+    const uint8_t lan1_v4[] = {
+        USB_STATUS_COMMAND_UPDATE,
+        USB_STATUS_TARGET_LAN1_IPV4,
+        11,
+        '1', '9', '2', '.', '0', '.', '2', '.', '1', '0', '1'
+    };
+    const uint8_t lan1_v6[] = {
+        USB_STATUS_COMMAND_UPDATE,
+        USB_STATUS_TARGET_LAN1_IPV6,
+        13,
+        '2', '0', '0', '1', ':', 'd', 'b', '8', ':', ':', '1', '0', '1'
+    };
+    const uint8_t lan2_v4[] = {
+        USB_STATUS_COMMAND_UPDATE,
+        USB_STATUS_TARGET_LAN2_IPV4,
+        11,
+        '1', '9', '2', '.', '0', '.', '2', '.', '2', '0', '2'
+    };
+    char addresses[USB_STATUS_IP_SLOT_COUNT][USB_STATUS_TEXT_SIZE] = {};
+
+    assert(usb_status_receive_report(lan1_v4, sizeof(lan1_v4)));
+    assert(usb_status_receive_report(lan1_v6, sizeof(lan1_v6)));
+    assert(usb_status_receive_report(lan2_v4, sizeof(lan2_v4)));
+    assert(usb_status_take_network_status(addresses));
+    assert(strcmp(addresses[0], "192.0.2.101") == 0);
+    assert(strcmp(addresses[1], "2001:db8::101") == 0);
+    assert(strcmp(addresses[2], "192.0.2.202") == 0);
+    assert(strcmp(addresses[3], "-") == 0);
 }
 
 static void test_ignores_unknown_command_report() {
@@ -129,6 +166,7 @@ int main() {
     test_limits_hid_payload_to_payload_size();
     test_skips_control_bytes();
     test_receives_display_text_command_report();
+    test_receives_network_address_slots();
     test_ignores_unknown_command_report();
     test_ignores_truncated_payload_report();
     test_builds_button_state_report();

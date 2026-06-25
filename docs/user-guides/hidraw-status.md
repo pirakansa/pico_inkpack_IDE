@@ -10,11 +10,21 @@ The HID interface uses 64-byte reports for small state updates and control comma
 | Byte | Field | Current value |
 | --- | --- | --- |
 | 0 | command | `0x01` update |
-| 1 | target | `0x01` display text |
+| 1 | target | address slot |
 | 2 | length | payload byte length, `0..61` |
 | 3..63 | payload | target-specific data |
 
-For display text updates, the Pico treats the payload as printable ASCII status text, trims trailing NUL bytes, ignores carriage returns, and stores it as the current status/IP text. The startup Lenna image stays visible until any physical A/B/C button is pressed; that button press transitions to the stored status/IP screen. After that transition, later display text updates render immediately. Unknown commands, unknown targets, truncated payloads, and payload lengths above 61 bytes are ignored.
+Address slot targets:
+
+| Target | Slot |
+| --- | --- |
+| `0x01` | legacy display text, stored as LAN1 IPv4 |
+| `0x10` | LAN1 IPv4 |
+| `0x11` | LAN1 IPv6 |
+| `0x12` | LAN2 IPv4 |
+| `0x13` | LAN2 IPv6 |
+
+For address updates, the Pico treats the payload as printable ASCII, trims trailing NUL bytes, ignores carriage returns, and stores it in the selected slot. The startup Lenna image stays visible until any physical A/B/C button is pressed; that button press transitions to the four-slot status/IP screen. After that transition, later address updates render immediately. Unknown commands, unknown targets, truncated payloads, and payload lengths above 61 bytes are ignored.
 
 The Pico also sends a HID IN report when the physical A/B/C button state changes:
 
@@ -50,7 +60,7 @@ udevadm info -a -n /dev/hidrawX
 
 ## Manual Write
 
-Write one command report to the matching hidraw device:
+Write one LAN1 IPv4 update report to the matching hidraw device:
 
 ```sh
 python3 - <<'PY' /dev/hidrawX "IP: 192.0.2.10"
@@ -59,7 +69,7 @@ import sys
 
 path = Path(sys.argv[1])
 payload = sys.argv[2].encode("ascii", errors="replace")[:61]
-report = bytes([0x01, 0x01, len(payload)]) + payload
+report = bytes([0x01, 0x10, len(payload)]) + payload
 path.write_bytes(report.ljust(64, b"\0"))
 PY
 ```
@@ -90,7 +100,7 @@ import sys
 
 path = Path(sys.argv[1])
 payload = sys.argv[2].encode("ascii", errors="replace")[:61]
-report = bytes([0x01, 0x01, len(payload)]) + payload
+report = bytes([0x01, 0x10, len(payload)]) + payload
 path.write_bytes(report.ljust(64, b"\0"))
 PY
 ```

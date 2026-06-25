@@ -51,8 +51,12 @@ uint8_t read_button_mask() {
     return mask;
 }
 
-void render_status_message(const char *status_message) {
-    epaper_status_display.render_status(status_message[0] == '\0' ? "(empty)" : status_message);
+void render_network_status(char addresses[USB_STATUS_IP_SLOT_COUNT][USB_STATUS_TEXT_SIZE]) {
+    epaper_status_display.render_network_status(
+        addresses[0],
+        addresses[1],
+        addresses[2],
+        addresses[3]);
 }
 
 int main() {
@@ -62,7 +66,12 @@ int main() {
 
     epaper_status_display.render_image(lennaImage);
 
-    char status_message[USB_STATUS_TEXT_SIZE] = "Waiting for hidraw input";
+    char network_addresses[USB_STATUS_IP_SLOT_COUNT][USB_STATUS_TEXT_SIZE] = {
+        "waiting",
+        "-",
+        "-",
+        "-"
+    };
     uint8_t button_report[USB_STATUS_REPORT_SIZE] = {};
     uint8_t last_reported_button_mask = 0xff;
     uint8_t pending_button_mask = 0;
@@ -72,15 +81,15 @@ int main() {
     while(1){
         tud_task();
 
-        if (usb_status_take_message(status_message, sizeof(status_message))) {
+        if (usb_status_take_network_status(network_addresses)) {
             if (!screen_state.is_showing_startup_image()) {
-                render_status_message(status_message);
+                render_network_status(network_addresses);
             }
         }
 
         uint8_t button_mask = read_button_mask();
         if (screen_state.handle_button_mask(button_mask)) {
-            render_status_message(status_message);
+            render_network_status(network_addresses);
         }
         if (button_mask != last_reported_button_mask) {
             pending_button_mask = button_mask;

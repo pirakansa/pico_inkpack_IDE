@@ -5,6 +5,33 @@
 
 static char pending_message[USB_STATUS_TEXT_SIZE] = {};
 static bool pending_message_available = false;
+static char network_addresses[USB_STATUS_IP_SLOT_COUNT][USB_STATUS_TEXT_SIZE] = {
+    "-",
+    "-",
+    "-",
+    "-"
+};
+static bool network_status_available = false;
+
+static bool usb_status_target_to_ip_slot(uint8_t target, size_t *slot) {
+    switch (target) {
+    case USB_STATUS_TARGET_DISPLAY_TEXT:
+    case USB_STATUS_TARGET_LAN1_IPV4:
+        *slot = 0;
+        return true;
+    case USB_STATUS_TARGET_LAN1_IPV6:
+        *slot = 1;
+        return true;
+    case USB_STATUS_TARGET_LAN2_IPV4:
+        *slot = 2;
+        return true;
+    case USB_STATUS_TARGET_LAN2_IPV6:
+        *slot = 3;
+        return true;
+    default:
+        return false;
+    }
+}
 
 bool usb_status_take_message(char *buffer, size_t buffer_size) {
     if (!pending_message_available || buffer_size == 0) {
@@ -14,6 +41,19 @@ bool usb_status_take_message(char *buffer, size_t buffer_size) {
     strncpy(buffer, pending_message, buffer_size - 1);
     buffer[buffer_size - 1] = '\0';
     pending_message_available = false;
+    return true;
+}
+
+bool usb_status_take_network_status(char addresses[USB_STATUS_IP_SLOT_COUNT][USB_STATUS_TEXT_SIZE]) {
+    if (!network_status_available) {
+        return false;
+    }
+
+    for (size_t slot = 0; slot < USB_STATUS_IP_SLOT_COUNT; ++slot) {
+        strncpy(addresses[slot], network_addresses[slot], USB_STATUS_TEXT_SIZE - 1);
+        addresses[slot][USB_STATUS_TEXT_SIZE - 1] = '\0';
+    }
+    network_status_available = false;
     return true;
 }
 
@@ -58,16 +98,26 @@ bool usb_status_receive_report(const uint8_t *data, uint16_t length) {
         return false;
     }
 
-    if (command != USB_STATUS_COMMAND_UPDATE || target != USB_STATUS_TARGET_DISPLAY_TEXT) {
+    size_t ip_slot = 0;
+    if (command != USB_STATUS_COMMAND_UPDATE || !usb_status_target_to_ip_slot(target, &ip_slot)) {
         return false;
     }
 
-    usb_status_format_message(
-        pending_message,
-        sizeof(pending_message),
+    size_t formatted_length = usb_status_format_message(
+        network_addresses[ip_slot],
+        sizeof(network_addresses[ip_slot]),
         data + USB_STATUS_REPORT_HEADER_SIZE,
         payload_length);
-    pending_message_available = true;
+    if (formatted_length == 0) {
+        strcpy(network_addresses[ip_slot], "-");
+    }
+    network_status_available = true;
+
+    if (target == USB_STATUS_TARGET_DISPLAY_TEXT) {
+        strncpy(pending_message, network_addresses[ip_slot], sizeof(pending_message) - 1);
+        pending_message[sizeof(pending_message) - 1] = '\0';
+        pending_message_available = true;
+    }
     return true;
 }
 

@@ -19,6 +19,11 @@ public:
         uint8_t *status_framebuffer);
 
     void render_status(const char *message);
+    void render_network_status(
+        const char *lan1_ipv4,
+        const char *lan1_ipv6,
+        const char *lan2_ipv4,
+        const char *lan2_ipv6);
     void render_image(const unsigned char *image);
 
 private:
