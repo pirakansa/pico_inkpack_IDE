@@ -70,3 +70,19 @@ bool usb_status_receive_report(const uint8_t *data, uint16_t length) {
     pending_message_available = true;
     return true;
 }
+
+size_t usb_status_build_button_report(uint8_t *buffer, size_t buffer_size, uint8_t button_mask) {
+    if (buffer_size < USB_STATUS_REPORT_SIZE) {
+        return 0;
+    }
+
+    memset(buffer, 0, USB_STATUS_REPORT_SIZE);
+    buffer[0] = USB_STATUS_COMMAND_STATE;
+    buffer[1] = USB_STATUS_TARGET_BUTTONS;
+    buffer[2] = 1;
+    buffer[USB_STATUS_REPORT_HEADER_SIZE] = button_mask & (
+        USB_STATUS_BUTTON_A_MASK |
+        USB_STATUS_BUTTON_B_MASK |
+        USB_STATUS_BUTTON_C_MASK);
+    return USB_STATUS_REPORT_SIZE;
+}

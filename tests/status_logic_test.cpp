@@ -77,6 +77,34 @@ static void test_ignores_truncated_payload_report() {
     assert(!usb_status_take_message(message, sizeof(message)));
 }
 
+static void test_builds_button_state_report() {
+    uint8_t report[USB_STATUS_REPORT_SIZE] = {};
+
+    size_t written = usb_status_build_button_report(
+        report,
+        sizeof(report),
+        USB_STATUS_BUTTON_A_MASK | USB_STATUS_BUTTON_C_MASK | 0x80);
+
+    assert(written == USB_STATUS_REPORT_SIZE);
+    assert(report[0] == USB_STATUS_COMMAND_STATE);
+    assert(report[1] == USB_STATUS_TARGET_BUTTONS);
+    assert(report[2] == 1);
+    assert(report[USB_STATUS_REPORT_HEADER_SIZE] == (
+        USB_STATUS_BUTTON_A_MASK | USB_STATUS_BUTTON_C_MASK));
+    assert(report[USB_STATUS_REPORT_HEADER_SIZE + 1] == 0);
+}
+
+static void test_rejects_small_button_report_buffer() {
+    uint8_t report[USB_STATUS_REPORT_SIZE - 1] = {};
+
+    size_t written = usb_status_build_button_report(
+        report,
+        sizeof(report),
+        USB_STATUS_BUTTON_A_MASK);
+
+    assert(written == 0);
+}
+
 int main() {
     test_formats_hid_report_text();
     test_limits_hid_payload_to_payload_size();
@@ -84,5 +112,7 @@ int main() {
     test_receives_display_text_command_report();
     test_ignores_unknown_command_report();
     test_ignores_truncated_payload_report();
+    test_builds_button_state_report();
+    test_rejects_small_button_report_buffer();
     return 0;
 }

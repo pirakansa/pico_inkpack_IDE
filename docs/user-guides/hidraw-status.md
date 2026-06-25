@@ -5,7 +5,7 @@ The firmware exposes a composite USB device:
 - USB CDC for stdio.
 - Vendor-defined HID IN/OUT for host status updates.
 
-The HID interface uses a 64-byte OUT report for small state updates and control commands. Each report starts with a 3-byte header followed by a payload:
+The HID interface uses 64-byte reports for small state updates and control commands. Each report starts with a 3-byte header followed by a payload:
 
 | Byte | Field | Current value |
 | --- | --- | --- |
@@ -15,6 +15,23 @@ The HID interface uses a 64-byte OUT report for small state updates and control 
 | 3..63 | payload | target-specific data |
 
 For display text updates, the Pico treats the payload as printable ASCII status text, trims trailing NUL bytes, ignores carriage returns, and displays the result on the e-paper screen. Unknown commands, unknown targets, truncated payloads, and payload lengths above 61 bytes are ignored.
+
+The Pico also sends a HID IN report when the physical A/B/C button state changes:
+
+| Byte | Field | Current value |
+| --- | --- | --- |
+| 0 | command | `0x02` state |
+| 1 | target | `0x02` buttons |
+| 2 | length | `0x01` |
+| 3 | payload | pressed-button bitmask |
+
+Button bitmask values:
+
+| Bit | Button | GPIO |
+| --- | --- | ---: |
+| 0 | A | 12 |
+| 1 | B | 13 |
+| 2 | C | 14 |
 
 ## Device Match
 
