@@ -33,4 +33,4 @@ The current display size is 296 by 128 pixels, so each framebuffer contains 4,73
 
 ## Firmware Usage
 
-The firmware displays `lennaImage` during startup before any host-provided HID status text arrives.
+The firmware displays `lennaImage` during startup and keeps it visible until any physical A/B/C button is pressed.

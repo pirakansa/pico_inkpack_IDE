@@ -14,7 +14,7 @@ The HID interface uses 64-byte reports for small state updates and control comma
 | 2 | length | payload byte length, `0..61` |
 | 3..63 | payload | target-specific data |
 
-For display text updates, the Pico treats the payload as printable ASCII status text, trims trailing NUL bytes, ignores carriage returns, and displays the result on the e-paper screen. Unknown commands, unknown targets, truncated payloads, and payload lengths above 61 bytes are ignored.
+For display text updates, the Pico treats the payload as printable ASCII status text, trims trailing NUL bytes, ignores carriage returns, and stores it as the current status/IP text. The startup Lenna image stays visible until any physical A/B/C button is pressed; that button press transitions to the stored status/IP screen. After that transition, later display text updates render immediately. Unknown commands, unknown targets, truncated payloads, and payload lengths above 61 bytes are ignored.
 
 The Pico also sends a HID IN report when the physical A/B/C button state changes:
 

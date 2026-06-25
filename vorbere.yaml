@@ -59,6 +59,7 @@ tasks:
       }
 
       c++ -std=c++17 -Wall -Wextra -Werror -Isrc \
+        src/app/screen_state.cpp \
         src/usb_status/usb_status.cpp \
         tests/status_logic_test.cpp \
         -o build/tests/status_logic_test

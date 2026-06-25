@@ -30,6 +30,7 @@ add_subdirectory(src/epaper)
 
 add_executable(picopro
     src/main.cpp
+    src/app/screen_state.cpp
     src/display/epaper_status_display.cpp
     src/newlib_entropy.cpp
     src/usb_status/usb_descriptors.cpp

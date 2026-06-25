@@ -4,6 +4,7 @@
 #include <tusb.h>
 
 #include "ImageData.h"
+#include "app/screen_state.h"
 #include "display/epaper_status_display.h"
 #include "usb_status/usb_status.h"
 
@@ -50,6 +51,10 @@ uint8_t read_button_mask() {
     return mask;
 }
 
+void render_status_message(const char *status_message) {
+    epaper_status_display.render_status(status_message[0] == '\0' ? "(empty)" : status_message);
+}
+
 int main() {
 
     tusb_init();
@@ -57,20 +62,26 @@ int main() {
 
     epaper_status_display.render_image(lennaImage);
 
-    char status_message[USB_STATUS_TEXT_SIZE] = {};
+    char status_message[USB_STATUS_TEXT_SIZE] = "Waiting for hidraw input";
     uint8_t button_report[USB_STATUS_REPORT_SIZE] = {};
     uint8_t last_reported_button_mask = 0xff;
     uint8_t pending_button_mask = 0;
     bool button_report_pending = true;
+    ScreenState screen_state;
 
     while(1){
         tud_task();
 
         if (usb_status_take_message(status_message, sizeof(status_message))) {
-            epaper_status_display.render_status(status_message[0] == '\0' ? "(empty)" : status_message);
+            if (!screen_state.is_showing_startup_image()) {
+                render_status_message(status_message);
+            }
         }
 
         uint8_t button_mask = read_button_mask();
+        if (screen_state.handle_button_mask(button_mask)) {
+            render_status_message(status_message);
+        }
         if (button_mask != last_reported_button_mask) {
             pending_button_mask = button_mask;
             button_report_pending = true;

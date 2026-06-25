@@ -1,3 +1,4 @@
+#include "app/screen_state.h"
 #include "usb_status/usb_status.h"
 
 #include <assert.h>
@@ -105,6 +106,24 @@ static void test_rejects_small_button_report_buffer() {
     assert(written == 0);
 }
 
+static void test_screen_transitions_from_startup_on_button_press() {
+    ScreenState state;
+
+    assert(state.is_showing_startup_image());
+    assert(!state.handle_button_mask(0));
+    assert(state.is_showing_startup_image());
+    assert(state.handle_button_mask(USB_STATUS_BUTTON_B_MASK));
+    assert(!state.is_showing_startup_image());
+}
+
+static void test_screen_ignores_buttons_after_status_transition() {
+    ScreenState state;
+
+    assert(state.handle_button_mask(USB_STATUS_BUTTON_A_MASK));
+    assert(!state.handle_button_mask(USB_STATUS_BUTTON_C_MASK));
+    assert(!state.is_showing_startup_image());
+}
+
 int main() {
     test_formats_hid_report_text();
     test_limits_hid_payload_to_payload_size();
@@ -114,5 +133,7 @@ int main() {
     test_ignores_truncated_payload_report();
     test_builds_button_state_report();
     test_rejects_small_button_report_buffer();
+    test_screen_transitions_from_startup_on_button_press();
+    test_screen_ignores_buttons_after_status_transition();
     return 0;
 }
